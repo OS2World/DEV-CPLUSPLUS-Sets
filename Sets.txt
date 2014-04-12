@@ -1,0 +1,147 @@
+                                  Sets v. 1.15
+                                 by Hubert Chan
+
+What it is
+==========
+  It is a simple C++ class that allows you to create sets and use normal set
+operations on them, including union, intersection, etc.  It should work with
+any compiler that accepts the C++ 2.0 standard.
+  Included is a test program (SetTest.exe), which is an OS/2 executable (the
+emx 0.8 runtime environment is required).  To run the program on an other
+system, you will have to recompile it.
+  The included makefile was made for emx 0.8 and dmake.  It should be fairly
+easy to modify it to suit your compiler.
+
+How to use it
+=============
+  You will have to modify Sets.hpp and recompile Sets.cpp to use it.  As it is,
+it will create a set that can contain the elements -3,-2,...,6.  To modify
+Sets.hpp, you just need to change MINELEMENT and MAXELEMENT to the smallest and
+largest possible values (respectively) that could be an element in a set.
+
+  eg. if in a program, you want to use the elements -45,-44,...,19,20 in a set,
+then you would set MINELEMENT to -45, and MAXELEMENT to 20.
+
+  These values are only used to conserve memory.  For example, if you want to
+have a set of numbers ranging from 300 - 350, you would have to use at least a
+'short' type (ie. 2 bytes).  A set of 'short' values would take 65536 / 8 = 8192
+bytes, or 8 kb.  However, with MINELEMENT and MAXELEMENT set properly, it would
+only take 50 / 8 = 7 bytes < 1 kb, saving over 7 kb of memory.  If you had a
+bunch of sets, the gain would be even greater.
+
+NOTE: There is no range checking performed, so trying to add an element that is
+----  out of range may produce interresting effects.
+
+  If you want, you can also change Set::SetElement to some other type, as long
+as every element that you want to use is within the range of the type.  This is
+useful for saving memory, if, for example, you only have 5 elements in your
+set, and you don't want to use a whole 2 bytes (the size of in int on some
+systems) to refer to the elements.  Make sure that it is an ordinal type.
+Using a non-ordinal type (eg. float, double) may produce unexpected results.
+
+  You will also have to include Sets.hpp in your source files if you want to
+use it.
+  There are a few ways to create a set.
+        Set S1;                   // creates S1 = { } = the empty set
+        Set S2(2);                // creates S2 = { 2 }
+        Set::SetElement SElements[4] = { 3,5,7,1 };
+        Set S3(4,SElements);      // creates S3 = { 3,5,7,1 } = { 1,3,5,7 }
+          (The order of the numbers in SElements makes no difference.  The 4
+          in S(4,SElements) is the number of elements in the array SElements. )
+
+  I have attempted to use the most logical operators for each set operation.  I
+also borrowed some operators from Turbo Pascal's set type.
+
+The following table shows the operators and their meaning.  My home page has
+the same table, along with the meanings written in 'standard' mathematical
+notation (see below under 'Contacting me' for my home page).
+    operator(s) |   meaning
+   -------------+----------------------------------------
+        +,|     |  union of two sets
+       *,^,&    |  intersection of two sets
+    -(unary),~  |  complement (elements not in a set)
+     -(binary)  |  difference of two sets (or  S1 ^ ~S2)
+         <=     |  S1 is a subset of S2
+         <      |  S1 is a proper subset of S2
+         >=     |  S1 is a superset of S2
+         >      |  S1 is a proper superset of S2
+         ==     |  equivalence
+         !=     |  inequivalence
+
+  >= can also be used to mean S1 contains element E.
+  <= can also be used to mean E is an element in S1
+  S1.Card() indicates the cardinality of set S1 (the number of elements in S1)
+
+Disclaimer
+==========
+  If you screw up your computer while using Sets, it's not my fault.
+
+WARNING: Sets uses pointers, and performs no range checking whatsoever (in the
+interests of speed).  In order to ensure that you don't screw up your computer
+by accessing memory that you're not supposed to, you will have to do your own
+range checking.
+
+Contacting me
+=============
+e-mail: hyc@gpu.srv.ualberta.ca
+   or   hubert@cs.ualberta.ca (I don't check this one very often)
+
+snail mail:
+  Hubert Chan
+  3 Falstaff Ave.
+  St. Albert, AB
+  Canada, T8N 1V3
+
+WWW: http://www.ualberta.ca/~hyc/Programming/
+     this page should contain the latest version of Sets.
+
+Cost
+====
+  I'm not asking for any money from you if you want to use Sets.  On the other
+hand, I won't complain if you really want to send me something.
+  If you find Sets useful, please send me a note to let me know that someone is
+actualy using it.
+
+History
+=======
+I would like to thank Darin McBride for his suggestions.  Some I have
+implemented, some will be implemented in future versions.
+
+changes from version 1.1
+- added a function to determine the cardinality of a set.
+
+- renamed the files to have lower case extensions (as UNIX usually does it),
+  and fixed some things to make it work better in case-sensitive file systems.
+
+changes from version 1.0
+- now you can use 'E <= S' to mean 'E is an element of set S'.  As well, some
+  operators have been overloaded to accept elements as rvalues, instead of
+  converting them to sets first.
+
+- now you set MINELEMENT and MAXELEMENT instead of MINELEMENT and NUMELEMENT.
+  NUMELEMENT is now calculated from MINELEMENT and MAXELEMENT.
+
+- SetElement is now a public type in the Set class.
+
+- There is now a << operator to concatenate a set with a string. (for doing
+  things like 'cout << "This is a set: " << S1;' )  Unfortunately, I don't have
+  the full C++ package on my computer, so I can't test it.  If you want to try
+  it out, it is at the bottom of the Sets.CPP file, commented out.  You will
+  also have to uncomment the line in Sets.HPP declaring '<<' as a friend, and
+  uncomment the #include statement at the top of Sets.HPP.
+
+- added a copy initializer Set(Set &).
+
+To come - my plans for future versions
+=======
+in no particular order
+- make Sets a template to make it more versatile / easy to use
+- allow Sets to use user defined types.  Maybe allow sets of complex numbers,
+  polynomials, etc.  (OK, so this might be a bit too ambitious)
+- create a class that would allow the creation of mathematical groups, rings,
+  and fields (finite, of course).
+- make MINELEMENT and MAXELEMENT local in the Set class (instead of making them
+  '#define'd constants).  Shouldn't be too hard to do, but my compiler just
+  won't accept it for some reason.
+- any suggestions you have
+
